@@ -1,8 +1,8 @@
 import requests
 
-endpoint = "http://localhost:8000/api"
+endpoint = "http://localhost:8000/api/"
 
-res = requests.get(endpoint, params={"abc":123}, json={"product_id":1234})
+res = requests.post(endpoint, json={"title":None})
 
 print(res.text)
-print(res.status_code)
+# print(res.headers)

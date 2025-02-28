@@ -1,16 +1,22 @@
-from django.http import JsonResponse
-import json
+# from django.http import JsonResponse
+# import json
+from django.forms.models import model_to_dict
+from products.models import Product
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from products.serializers import ProductSerializer
 
+
+@api_view(['POST'])
 def api_home(request, *args, **kwargs):
-    print(request)
-    body = request.body
+    serializer = ProductSerializer(data=request.data)
+
     data = {}
-    try:
-        data = json.loads(body)
-    except Exception as e:
-        pass
+
+    if serializer.is_valid(raise_exception=True):
+        #instance = serializer.save()
+        print(serializer.data)
+        return Response(serializer.data)
     
-    data['params'] = dict(request.GET)
-    data['headers'] = dict(request.headers)
-    data['content-type'] = request.content_type
-    return JsonResponse(data)
+    return # no necesito retornar error si hago el raise-exception True
+    return Response({"invalid":"not good data"}, status=400)
