@@ -1,9 +1,11 @@
 from django.urls import path
 from . import views
 
+product_mixin_view = views.ProductMixinView.as_view()
+
 urlpatterns = [
-    path('<int:pk>/', views.ProductMixinView.as_view()),
-    path('<int:pk>/update/', views.ProductUpdateAPIView.as_view()),
-    path('<int:pk>/delete/', views.ProductDestroyAPIView.as_view()),
-    path('', views.ProductMixinView.as_view())
+    path('<int:pk>/', product_mixin_view),
+    path('<int:pk>/update/', product_mixin_view),
+    path('<int:pk>/delete/', product_mixin_view),
+    path('', views.ProductListCreateAPIView.as_view())
 ]
