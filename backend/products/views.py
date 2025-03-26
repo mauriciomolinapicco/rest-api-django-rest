@@ -24,6 +24,8 @@ class ProductListCreateAPIView(
     # permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_create(self, serializer):
+        # al email lo estoy accediendo desde el serializer pero lo podria hacer desde aca
+        # email = serializer.validated_data.pop('email') 
         title = serializer.validated_data.get('title')
         content = serializer.validated_data.get('content') or None 
         if content is None:
