@@ -11,7 +11,6 @@ from django.shortcuts import get_object_or_404
 class ProductListCreateAPIView(
         StaffEditorPermissionMixin,
         generics.ListCreateAPIView
-        
         ):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -20,7 +19,7 @@ class ProductListCreateAPIView(
     #     TokenAuthentication
     #### -->> Dont need it anymore since i setted it up in settings.py 
 
-    # dont nieed this since i have StaffEditorPermissionMixin
+    # dont need this since i have StaffEditorPermissionMixin
     # permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_create(self, serializer):
@@ -30,8 +29,21 @@ class ProductListCreateAPIView(
         content = serializer.validated_data.get('content') or None 
         if content is None:
             content = title
-        serializer.save(content=content)
-        
+        serializer.save(user=self.request.user, content=content)
+    
+    def get_queryset(self, *args, **kwargs):
+        """
+            Estoy filtrando por user, para cada user devuelvo el queryset de los productos 
+            que tengan a este usuario asociado
+            LO PUEDO ABSTRAER EN mixins.py
+        """
+        request = self.request
+        user = self.request.user
+        qs = super().get_queryset(*args, **kwargs)
+        if not user.is_authenticated:
+            return Product.objects.none()
+        return qs.filter(user=request.user)
+
 
 class ProductDetailAPIView(
             StaffEditorPermissionMixin,
@@ -39,6 +51,18 @@ class ProductDetailAPIView(
                            ):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        """
+        al igual que en list create devuelvo el producto solo si el usuario es quien lo creo
+        """
+        request = self.request
+        user = self.request.user
+        qs = super().get_queryset(*args, **kwargs)
+        if not user.is_authenticated:
+            return Product.objects.none()
+        return qs.filter(user=request.user)
+
 
 
 class ProductUpdateAPIView(
